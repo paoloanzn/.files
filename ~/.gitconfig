@@ -1,0 +1,33 @@
+[user]
+	name = Paolo Anzani
+	email = paoloanzn@gmail.com
+	signingkey = 14B7786A2415E2A0
+
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+
+[credential]
+	helper = store
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = false
+
+[core]
+	editor = vim
+	autocrlf = input
+[commit]
+	gpgsign = true
+[gpg]
+	program = /opt/homebrew/bin/gpg
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
