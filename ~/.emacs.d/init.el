@@ -105,11 +105,16 @@
 
 (setq org-babel-python-command "python3")
 
+;; Swift support
+
+(install-pkg 'ob-swift)
+
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
    (shell . t)
    (python . t)
+   (swift . t)
    (R . t)
    (C . t)))
 
