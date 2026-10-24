@@ -21,7 +21,7 @@ all += git
 git : ~/.gitconfig
 
 all += emacs
-emacs: ~/.emacs.d/init.el ~/.emacs.d/custom.el
+emacs: ~/.emacs.d/init.el ~/.emacs.d/custom.el ~/.emacs.d/themes/leuven-zen-theme.el
 
 all += vim
 vim : ~/.vimrc
