@@ -17,13 +17,8 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.hidden = true
 
--- Use terminal's ANSI colors
-vim.opt.termguicolors = false
-
--- Traditional Vim colors
--- vim.opt.background = "dark"
-vim.cmd.colorscheme("vim")
-
+-- Terminal colors
+vim.opt.termguicolors = true
 vim.opt.signcolumn = "auto:1"
 vim.opt.foldcolumn = "0"
 vim.opt.completeopt = { "menu", "menuone", "noselect", "popup" }
