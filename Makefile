@@ -29,6 +29,9 @@ vim : ~/.vimrc
 all += tmux
 tmux: ~/.tmux.conf
 
+all += nvim
+nvim : ~/.config/nvim/init.lua
+
 all : $(all)
 .PHONY: all $(all)
 .DEFAULT_GOAL := all
