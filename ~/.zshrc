@@ -2,28 +2,6 @@
 # Used for OS-specifc settings.
 local OS_TYPE=$(uname)
 
-# Custom PATH defintions.
-
-if [[ "$OS_TYPE" == "Darwin" ]]; then
-  # Default user-installed binaries.
-  export PATH="$PATH:$HOME/.local/bin"
-
-  # Map llvm toolchain installed from Homebrew.
-  export PATH="$(brew --prefix llvm)/bin:$PATH"
-
-  # Map ruby version installed from Homebrew.
-  export PATH="$(brew --prefix ruby)/bin:/opt/homebrew/lib/ruby/gems/4.0.0/bin:$PATH"
-  export PATH="$(brew --prefix ruby@3.2)/bin:$PATH"
-
-fi
-
-# `bun`
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-# Custom scripts bin directory.
-export PATH="$HOME/Scripts/bin:$PATH"
-
 # Alias definitions.
 # `ls` aliases.
 alias ls="ls -lhG"
