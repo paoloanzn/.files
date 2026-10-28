@@ -58,6 +58,21 @@ peg() {
   ps -ef | grep $1
 }
 
+# Use `prettier` from the CLI when installed through VS-Code.
+prettier() {
+  local -a paths
+  paths=(
+    "$HOME"/.vscode{,-server}/extensions/*/node_modules/prettier/bin/prettier.cjs(N)
+  )
+
+  if (( ${#paths} == 0 )); then
+    echo "Prettier not found" >&2
+    return 1
+  fi
+
+  node "${paths[-1]}" "$@"
+}
+
 # TAB complete system init.
 autoload -Uz compinit && compinit -C
 
