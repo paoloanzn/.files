@@ -57,3 +57,6 @@ autoload -Uz compinit && compinit -C
 # Shell TAB completions.
 # `bun` completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# Custom prompt.
+PROMPT='%n@%m %1~ %# '
