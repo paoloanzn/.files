@@ -270,6 +270,15 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 
 ;; Interactive commands & Macros
 
+;; Interactive Compile
+
+(defun compile-interactive()
+  "Run compilation with interactive input enabled and focus its window."
+  (interactive)
+  (let ((buffer (compile (compilation-read-command compile-command) t)))
+    (when-let ((window (get-buffer-window buffer)))
+      (select-window window))))
+
 ;; Files shortcuts
 
 (defun open-init-file()
