@@ -23,6 +23,12 @@ vim.opt.signcolumn = "auto:1"
 vim.opt.foldcolumn = "0"
 vim.opt.completeopt = { "menu", "menuone", "noselect", "popup" }
 
+-- Tabbing
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
+vim.opt.expandtab = true
+
 -- Use nvim-tree instead of netrw
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
