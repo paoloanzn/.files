@@ -1,65 +1,66 @@
-# Created by `pipx` on 2025-01-23 14:27:48
-export PATH="$PATH:/Users/paolo/.local/bin"
+# Detect OS type.
+# Used for OS-specifc settings.
+local OS_TYPE=$(uname)
 
-# Alias
+# Custom PATH defintions.
 
-() {
-    local OS_TYPE=$(uname)
+if [[ "$OS_TYPE" == "Darwin" ]]; then
+  # Default user-installed binaries.
+  export PATH="$PATH:$HOME/.local/bin"
 
-    if [[ "$OS_TYPE" == "Darwin" ]]; then
-        # MACOS
-        alias ls="ls -lhG"
-        alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
-        alias brew-clang="$(brew --prefix llvm)/bin/clang"
-        export PATH="$(brew --prefix llvm)/bin:$PATH"
+  # Map llvm toolchain installed from Homebrew.
+  export PATH="$(brew --prefix llvm)/bin:$PATH"
 
-    elif [[ "$OS_TYPE" == "Linux" ]]; then
-        # LINUX
-        alias ls="ls -lh --color=auto"
-    fi
+  # Map ruby version installed from Homebrew.
+  export PATH="$(brew --prefix ruby)/bin:/opt/homebrew/lib/ruby/gems/4.0.0/bin:$PATH"
+  export PATH="$(brew --prefix ruby@3.2)/bin:$PATH"
 
-    # UNIVERSAL
-    alias claude-d="claude --dangerously-skip-permissions"
-    alias src="source ~/.zshrc"
-    alias note="cd ~/Documents/notes && vim"
-    alias notes="cd ~/Documents/notes && ls"
-    alias cfg="vim ~/.zshrc"
-    alias python="python3"
-    #alias yolo="claude --permission-mode=bypassPermissions"
-    
-    if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then
-      tmux attach || exec tmux new-session && exit;
-    fi
-}
+fi
 
-# bun completions
-[ -s "/Users/paolo/.bun/_bun" ] && source "/Users/paolo/.bun/_bun"
-
-# bun
+# `bun`
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# scripts
-export PATH="/Users/paolo/scripts/bin:$PATH"
+# Custom scripts bin directory.
+export PATH="$HOME/Scripts/bin:$PATH"
 
-# Prompt
-# PROMPT="%F{46}%n%f%F{46}@%f%F{46}%m%f %B%F{33}%d%f%b %?>"
-export PATH="/opt/homebrew/opt/ruby/bin:/opt/homebrew/lib/ruby/gems/4.0.0/bin:$PATH"
-export PATH="/opt/homebrew/opt/ruby@3.2/bin:$PATH"
+# Alias definitions.
+# `ls` aliases.
+alias ls="ls -lhG"
+alias la= "ls -a"
 
+if [[ "$OS_TYPE" == "Linux" ]]; then
+  alias ls="ls -lh --color=auto"  
+fi
+
+# Map `code` to VS-Code.
+if [[ "$OS_TYPE" == "Darwin" ]]; then
+  alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
+fi
+
+# `claude` aliases.
+alias claude-d="claude --dangerously-skip-permissions"
+
+# Make sure `python` is mapped to `python3`.
+alias python="python3"
+
+# Start and attach to a new tmux session or attach to an existing one.
+# This will always open tmux by default, without leaving orphan sessions.
+
+if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
+  tmux attach || exec tmux new-session
+  exit
+fi
+
+# Custom commands.
+# Get process from full-format `ps` snapshot.
+peg() {
+  ps -ef | grep $1
+}
+
+# TAB complete system init.
 autoload -Uz compinit && compinit -C
 
-
-vterm_printf() {
-    if [ -n "$TMUX" ] \
-        && { [ "${TERM%%-*}" = "tmux" ] \
-            || [ "${TERM%%-*}" = "screen" ]; }; then
-        # Tell tmux to pass the escape sequences through
-        printf "\ePtmux;\e\e]%s\007\e\\" "$1"
-    elif [ "${TERM%%-*}" = "screen" ]; then
-        # GNU screen (screen, screen-256color, screen-256color-bce)
-        printf "\eP\e]%s\007\e\\" "$1"
-    else
-        printf "\e]%s\e\\" "$1"
-    fi
-}
+# Shell TAB completions.
+# `bun` completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
