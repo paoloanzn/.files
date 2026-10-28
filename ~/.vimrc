@@ -28,3 +28,17 @@ set regexpengine=0
 " Override comments's color.
 " Sets the foreground color of syntax-highlighted comments to green in terminals using the cterm color interface.
 highlight Comment ctermfg=green
+
+" Custom commands.
+" Macos clipboard support.
+if has('mac')
+  command! Paste r !pbpaste
+  command! -range=% Copy <line1>,<line2>w !pbcopy
+
+  nnoremap +p :r !pbpaste<CR>
+  vnoremap +c :w !pbcopy<CR>
+endif
+
+
+
+
