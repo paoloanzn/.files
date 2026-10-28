@@ -24,10 +24,34 @@ vim.opt.foldcolumn = "0"
 vim.opt.completeopt = { "menu", "menuone", "noselect", "popup" }
 
 -- Tabbing
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.softtabstop = 4
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.softtabstop = 2
 vim.opt.expandtab = true
+
+-- Colorscheme
+vim.cmd.colorscheme("habamax")
+
+-- Override comments' color.
+vim.api.nvim_set_hl(0, "Comment", { ctermfg = "green" })
+
+vim.api.nvim_set_hl(0, "Comment", {
+  ctermfg = "green",
+  fg = "#00FF00",
+})
+
+-- Custom commands and keymaps for macOS clipboard.
+if vim.fn.has("mac") == 1 then
+  -- Custom commands.
+  vim.api.nvim_create_user_command("Paste", "read !pbpaste", {})
+  vim.api.nvim_create_user_command("Copy", "'<,'>write !pbcopy", {
+    range = "%",
+  })
+
+  -- Keymaps.
+  vim.keymap.set("n", "+p", ":read !pbpaste<CR>", { silent = true })
+  vim.keymap.set("v", "+c", ":write !pbcopy<CR>", { silent = true })
+end
 
 -- Use nvim-tree instead of netrw
 vim.g.loaded_netrw = 1
