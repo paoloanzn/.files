@@ -1,13 +1,30 @@
+" Enable syntax highligh.
 syntax on
+
+" Set theme.
+colorscheme habamax
+
+" TAB configuration.
 set tabstop=2
-set shiftwidth=2
 set expandtab
+
+" Set 2 column for `>>` and `<<` commands.
+set shiftwidth=2
+
+" Enable Auto indent.
 set ai
+
+" Enable position relative line numbers.
 set number
-set hlsearch
 set ruler
-highlight Comment ctermfg=green
-colorscheme default
+
+" Enable mouse support.
 set mouse=a
+
+" Choose regexp engine automatically.
+" NOTE: If not set to `0` (means `choose the engine automaticially`) Typescript syntax highlighting may crash the editor.
 set regexpengine=0
 
+" Override comments's color.
+" Sets the foreground color of syntax-highlighted comments to green in terminals using the cterm color interface.
+highlight Comment ctermfg=green
