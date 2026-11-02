@@ -32,6 +32,12 @@ tmux: ~/.tmux.conf
 all += nvim
 nvim : ~/.config/nvim/init.lua
 
+all += claude
+claude : ~/.claude/CLAUDE.md
+
+all += codex
+codex : ~/.codex/AGENTS.md
+
 all : $(all)
 .PHONY: all $(all)
 .DEFAULT_GOAL := all
