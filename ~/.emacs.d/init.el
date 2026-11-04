@@ -65,10 +65,76 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 
+;; Remap local buffer zoom to global zoom
+
+(global-set-key (kbd "s-+") #'global-text-scale-adjust)
+(global-set-key (kbd "s-=") #'global-text-scale-adjust)
+(global-set-key (kbd "s--") #'global-text-scale-adjust)
+(global-set-key (kbd "s-0") #'global-text-scale-adjust)
+
+;; Decouple frame resizing from font size resizing
+
+(setq global-text-scale-adjust-resizes-frames nil)
+
 ;; Mode line
 
 (set-face-attribute 'mode-line nil :height 1.1)
 (set-face-attribute 'mode-line-inactive nil :height 1.0)
+
+;; Scale the Mode line to match the originating buffer (proportinally)
+
+(defvar-local mode-line-scale-cookies nil)
+
+(defun scale-mode-line()
+  "Match the mode line's scale to the current buffer."
+  (dolist (cookie mode-line-scale-cookies)
+    (face-remap-remove-relative cookie))
+  (setq mode-line-scale-cookies nil)
+
+  (when text-scale-mode
+    (let ((factor (expt text-scale-mode-step
+			text-scale-mode-amount)))
+      (dolist (face '(mode-line
+		      mode-line-active
+		      mode-line-inactive))
+	(when (facep face)
+	  (push (face-remap-add-relative face :height factor)
+		mode-line-scale-cookies))))))
+
+(add-hook 'text-scale-mode-hook #'scale-mode-line)
+
+;; Scale the minibuffer to match the originating buffer
+
+(defun scale-minibuffer ()
+  "Use the originating buffer's text scale in the minibuffer."
+  (let ((window (minibuffer-selected-window)))
+    (when (window-live-p window)
+      (let ((level
+             (with-current-buffer (window-buffer window)
+               (if text-scale-mode
+                   text-scale-mode-amount
+                 0))))
+        (text-scale-set level)))))
+
+(add-hook 'minibuffer-setup-hook #'scale-minibuffer)
+
+;; Line numbers mode
+
+(setq display-line-numbers-type 'relative)
+
+(defmacro line-numbers-for-mode (mode)
+  (let ((hook-name (intern (format "%s-hook" mode))))
+    `(add-hook ',hook-name (lambda () (display-line-numbers-mode 1)))))
+
+(line-numbers-for-mode c-mode)
+(line-numbers-for-mode c++-mode)
+(line-numbers-for-mode python-mode)
+(line-numbers-for-mode js-mode)
+(line-numbers-for-mode rust-mode)
+(line-numbers-for-mode emacs-lisp-mode)
+(line-numbers-for-mode sh-mode)
+(line-numbers-for-mode go-mode)
+(line-numbers-for-mode typescript-ts-mode)
 
 ;; Packages
 
@@ -93,6 +159,15 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file 'noerror)
 
+;; Writable Dired mode -- enable
+
+(require 'wdired)
+(setq wdired-allow-to-change-permissions t)
+
+(define-key dired-mode-map (kbd "M-e") #'wdired-change-to-wdired-mode)
+(define-key wdired-mode-map (kbd "s-s") #'wdired-finish-edit)
+(define-key wdired-mode-map (kbd "M-c") #'wdired-abort-changes)
+
 ;; Org mode -- Install
 
 (unless (package-installed-p 'org)
@@ -105,6 +180,7 @@
 ;; Org Babel
 
 (setq org-babel-python-command "python3")
+(setq org-babel-js-cmd "node")
 
 ;; Swift support
 
@@ -117,6 +193,7 @@
    (python . t)
    (swift . t)
    (R . t)
+   (js . t)
    (C . t)))
 
 ;; Mixed Fonts
@@ -215,6 +292,8 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 (require 'evil)
 (evil-mode 1)
 
+(define-key wdired-mode-map [remap evil-write] #'wdired-finish-edit)
+
 ;; Which-key -- Install
 
 (install-pkg 'which-key)
@@ -296,20 +375,34 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
      (browse-url-default-browser ,url)))
 
 (defun open-chatgpt(prompt)
-  "Open a new browser page and navigate to chatgpt.com"
+  "Open ChatGPT with the selected text and an optional question."
   (interactive "sAsk a question: ")
-  (cond ((eq prompt nil)
-	 (navigate-to "https://chatgpt.com"))
-	(t
-	 (navigate-to (format "https://chatgpt.com?q=%s" prompt)))))
+  (let* ((selection (when (use-region-p)
+                      (buffer-substring-no-properties
+                       (region-beginning) (region-end))))
+         (text (concat
+                (if selection (format "```\n%s\n```\n\n" selection) "")
+                prompt)))
+    (navigate-to
+     (if (string-empty-p text)
+         "https://chatgpt.com"
+       (format "https://chatgpt.com/?q=%s"
+               (url-hexify-string text))))))
 
 (defun open-claude(prompt)
-  "Open a new browser page and navigate to claude.ai"
+  "Open Claude with the selected text and an optional question."
   (interactive "sAsk a question: ")
-  (cond ((eq prompt nil)
-	 (navigate-to "https://claude.ai/new"))
-	(t
-	 (navigate-to (format "https://claude.ai/new?q=%s" prompt)))))
+  (let* ((selection (when (use-region-p)
+                      (buffer-substring-no-properties
+                       (region-beginning) (region-end))))
+         (text (concat
+                (if selection (format "```\n%s\n```\n\n" selection) "")
+                prompt)))
+    (navigate-to
+     (if (string-empty-p text)
+         "https://claude.ai"
+       (format "https://claude.ai/new?q=%s"
+               (url-hexify-string text))))))
 
 ;; Keybinds remaps
 
