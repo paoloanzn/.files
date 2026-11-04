@@ -168,6 +168,22 @@
 (define-key wdired-mode-map (kbd "s-s") #'wdired-finish-edit)
 (define-key wdired-mode-map (kbd "M-c") #'wdired-abort-changes)
 
+;; Markdown mode -- Install
+
+(install-pkg 'markdown-mode)
+
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+
+(add-hook 'markdown-mode-hook (lambda () (setq markdown-command "pandoc")))
+(add-hook 'markdown-mode-hook (lambda () (visual-line-mode 1)))
+
+;; Valign mode -- Install
+
+(install-pkg 'valign)
+(add-hook 'markdown-mode-hook #'valign-mode)
+
 ;; Org mode -- Install
 
 (unless (package-installed-p 'org)
@@ -215,6 +231,8 @@
 
 (add-hook 'org-mode-hook #'visual-line-mode)
 (add-hook 'org-mode-hook #'mixed-pitch-mode)
+(add-hook 'markdown-mode-hook #'visual-line-mode)
+(add-hook 'markdown-mode-hook #'mixed-pitch-mode)
 
 ;; Ox-gfm -- Install -- Markdown code blocks rendering
 
