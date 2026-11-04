@@ -7,9 +7,6 @@ if [[ "$OS_TYPE" == "Darwin" ]]; then
   # Init Homebrew environment variables.
   eval "$(/opt/homebrew/bin/brew shellenv)"
 
-  # Default user-installed binaries.
-  export PATH="$PATH:$HOME/.local/bin"
-
   # Map llvm toolchain installed from Homebrew.
   export PATH="$(brew --prefix llvm)/bin:$PATH"
 
@@ -18,6 +15,9 @@ if [[ "$OS_TYPE" == "Darwin" ]]; then
   export PATH="$(brew --prefix ruby@3.2)/bin:$PATH"
 
 fi
+
+# Default user-installed binaries.
+export PATH="$PATH:$HOME/.local/bin"
 
 # `bun`
 export BUN_INSTALL="$HOME/.bun"
