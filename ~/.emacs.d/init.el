@@ -381,6 +381,9 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 (setq tramp-default-method "ssh")
 (setq remote-file-name-inhibit-cache 60)
 
+(with-eval-after-load 'tramp
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
 ;; Interactive commands & Macros
 
 ;; Interactive Compile
@@ -442,3 +445,5 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 
 (keymap-global-set "M-k" 'kill-buffer)
 (keymap-global-set "M-s" 'switch-to-buffer)
+(keymap-global-set "M-o" 'other-window)
+(keymap-global-set "M-0" 'delete-window)
