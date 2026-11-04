@@ -135,6 +135,8 @@
 (line-numbers-for-mode sh-mode)
 (line-numbers-for-mode go-mode)
 (line-numbers-for-mode typescript-ts-mode)
+(line-numbers-for-mode tide-lang-mode)
+
 
 ;; Packages
 
@@ -350,6 +352,18 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 
 (add-hook 'rust-mode-hook
           (lambda () (setq indent-tabs-mode nil)))
+
+;; Tide-lang-mode -- Install
+
+(let ((dir (expand-file-name "lisp/tide-syntax" user-emacs-directory)))
+  (unless (file-directory-p dir)
+    (make-directory (file-name-directory dir) t)
+    (shell-command
+     (format "git clone https://github.com/paoloanzn/tide-syntax.git %s"
+             (shell-quote-argument dir))))
+  (add-to-list 'load-path (expand-file-name "emacs" dir)))
+
+(require 'tide-lang-mode)
 
 ;; Vterm -- Install
 
