@@ -292,6 +292,8 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 (require 'evil)
 (evil-mode 1)
 
+(evil-ex-define-cmd "q[uit]" #'kill-current-buffer)
+
 (define-key wdired-mode-map [remap evil-write] #'wdired-finish-edit)
 
 ;; Which-key -- Install
