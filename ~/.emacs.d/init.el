@@ -137,7 +137,6 @@
 (line-numbers-for-mode typescript-ts-mode)
 (line-numbers-for-mode tide-lang-mode)
 
-
 ;; Packages
 
 (require 'package)
@@ -365,6 +364,39 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 
 (require 'tide-lang-mode)
 
+;; Typescript mode -- Install
+
+(require 'typescript-ts-mode)
+
+(require 'treesit)
+
+(add-to-list 'auto-mode-alist
+             '("\\.ts\\'" . typescript-ts-mode))
+
+(add-to-list 'auto-mode-alist
+             '("\\.tsx\\'" . tsx-ts-mode))
+
+(setq typescript-ts-mode-indent-offset 2)
+
+;; Tree-sitter grammars
+(add-to-list 'treesit-language-source-alist
+             '(typescript
+               "https://github.com/tree-sitter/tree-sitter-typescript"
+               "master"
+               "typescript/src"))
+
+(add-to-list 'treesit-language-source-alist
+             '(tsx
+               "https://github.com/tree-sitter/tree-sitter-typescript"
+               "master"
+               "tsx/src"))
+
+;; Automatically install missing grammars
+(when (treesit-available-p)
+  (dolist (lang '(typescript tsx))
+    (unless (treesit-language-available-p lang)
+      (treesit-install-language-grammar lang))))
+
 ;; Vterm -- Install
 
 (install-pkg 'vterm)
@@ -447,3 +479,81 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 (keymap-global-set "M-s" 'switch-to-buffer)
 (keymap-global-set "M-o" 'other-window)
 (keymap-global-set "M-0" 'delete-window)
+
+;; Autocomplete configuration
+
+(require 'cl-lib)
+
+;; Define language servers
+(defvar eglot-servers
+  '(((c-mode c++-mode c-ts-mode c++-ts-mode)
+     ("clangd"))
+
+    ((python-mode python-ts-mode)
+     ("basedpyright-langserver" "--stdio")
+     ("pyright-langserver" "--stdio")
+     ("pylsp"))
+
+    ((rust-mode rust-ts-mode)
+     ("rust-analyzer"))
+
+    ((js-mode js-ts-mode typescript-mode
+              typescript-ts-mode tsx-ts-mode)
+     ("npx" "--no-install" "tsc" "--lsp" "--stdio"))))
+
+;; Find the first available server
+(defun eglot-pick-server (commands _interactive &optional _project)
+  (cl-find-if
+   (lambda (cmd)
+     (executable-find
+      (car cmd)
+      (file-remote-p default-directory)))
+   commands))
+
+;; Register language servers with Eglot
+(with-eval-after-load 'eglot
+  (dolist (entry eglot-servers)
+    (add-to-list
+     'eglot-server-programs
+     (cons (car entry)
+           (apply-partially #'eglot-pick-server
+                            (cdr entry))))))
+
+;; Enable Eglot automatically when a server exists.
+(defun eglot-auto-start ()
+  (when (and buffer-file-name
+             (cl-some
+              (lambda (entry)
+                (and (apply #'derived-mode-p (car entry))
+                     (eglot-pick-server
+                      (cdr entry) nil)))
+              eglot-servers))
+    (eglot-ensure)))
+
+(add-hook 'prog-mode-hook #'eglot-auto-start)
+
+;; Eglot -- install
+
+(require 'eglot)
+(setq eglot-autoshutdown t)
+
+;; Silently ignore unsupported configuration registration.
+(cl-defmethod eglot-register-capability
+  (_server (_method (eql workspace/didChangeConfiguration))
+           _id &rest _params)
+  nil)
+
+;; Completion popup.
+(install-pkg 'corfu)
+(require 'corfu-popupinfo)
+
+(setq corfu-auto t)
+(setq corfu-auto-delay 0.25)
+(setq corfu-auto-prefix 2)
+(setq corfu-cycle t)
+
+(global-corfu-mode 1)
+(corfu-popupinfo-mode 1)
+
+;; TAB can indent or trigger completion.
+(setq tab-always-indent 'complete)
