@@ -14,6 +14,12 @@
 [optional footer: reference issues, e.g., Resolves #123]
 ```
 
+### PRs
+
+- Never sign PRs with this footer: "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+- The first PRs comment should use a series of simple and clear bullet point list to explain the changes and why they were made.
+- Do not include any `Test` section with checkboxes.
+
 ## Code Style
 
 ### Co-location
