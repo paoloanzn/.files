@@ -2,3 +2,6 @@
 *.md linguist-generated=false
 *.md linguist-documentation=false
 *.md linguist-detectable=true
+
+# git-crypt: skills prefixed with private- are encrypted on push
+~/.skills/private-*/** filter=git-crypt diff=git-crypt
