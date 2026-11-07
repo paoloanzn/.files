@@ -38,6 +38,9 @@ claude : ~/.claude/CLAUDE.md
 all += codex
 codex : ~/.codex/AGENTS.md
 
+all += skills
+skills : ~/.skills
+
 all : $(all)
 .PHONY: all $(all)
 .DEFAULT_GOAL := all
