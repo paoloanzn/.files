@@ -1,5 +1,11 @@
 # claude.md
 
+## Workflow
+
+### AMF rule
+
+- `AMF` is an abbreviation for "Ask me first". Everytime you find it in a message it literally means the following: "Use your question asking tool to ask me question in order to clarify any doubt or specify anything needed before you start". It can be used at the start of a conversation/task, but not necessarly.
+
 ## Git
 
 ### Commits Text
