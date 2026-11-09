@@ -6,6 +6,17 @@
 (setq auto-save-default nil)
 (setq sentence-end-double-space nil)
 
+;; Horizontal scrolling
+
+(setq-default truncate-lines t)
+(setq auto-hscroll-mode t)
+(setq hscroll-margin 5)
+
+;; Enable horizontal scrolling with trackpad gestures
+(setq mouse-wheel-tilt-scroll t)
+(pixel-scroll-precision-mode 1)
+
+
 ;; Install macro
 
 (defmacro install-pkg (pkg-name)
@@ -17,7 +28,7 @@
 ;; Theme
 
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
-(load-theme 'leuven-zen t)
+(load-theme 'gruber-darker t)
 
 ;; Startup buffer
 
