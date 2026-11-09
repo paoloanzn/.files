@@ -494,6 +494,7 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 ;; Autocomplete configuration
 
 (require 'cl-lib)
+(load (expand-file-name "util/eglot-typescript.el" user-emacs-directory))
 
 ;; Define language servers
 (defvar eglot-servers
@@ -510,16 +511,20 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 
     ((js-mode js-ts-mode typescript-mode
               typescript-ts-mode tsx-ts-mode)
-     ("npx" "--no-install" "tsc" "--lsp" "--stdio"))))
+     eglot-typescript-command)))
 
 ;; Find the first available server
 (defun eglot-pick-server (commands _interactive &optional _project)
-  (cl-find-if
-   (lambda (cmd)
-     (executable-find
-      (car cmd)
-      (file-remote-p default-directory)))
-   commands))
+  (cl-loop
+   for candidate in commands
+   for command =
+   (if (functionp candidate)
+       (funcall candidate)
+     (when (executable-find
+            (car candidate)
+            (file-remote-p default-directory))
+       candidate))
+   when command return command))
 
 ;; Register language servers with Eglot
 (with-eval-after-load 'eglot
