@@ -421,7 +421,7 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 
 (require 'tramp)
 
-(setq tramp-default-method "ssh")
+(setq tramp-default-method "sshx")
 (setq remote-file-name-inhibit-cache 60)
 
 (with-eval-after-load 'tramp
