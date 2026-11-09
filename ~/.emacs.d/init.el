@@ -6,6 +6,14 @@
 (setq auto-save-default nil)
 (setq sentence-end-double-space nil)
 
+;; Install macro
+
+(defmacro install-pkg (pkg-name)
+  `(progn
+     (unless (package-installed-p ,pkg-name)
+       (package-install ,pkg-name))
+     (require ,pkg-name)))
+
 ;; Theme
 
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
@@ -146,14 +154,6 @@
   (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
 ;; (package-refresh-contents) ;; This is too slow to be done at every startup
 (package-initialize)
-
-;; Install macro
-
-(defmacro install-pkg (pkg-name)
-  `(progn
-     (unless (package-installed-p ,pkg-name)
-       (package-install ,pkg-name))
-     (require ,pkg-name)))
 
 ;; Hide `Custom` generated cofiguration
 
