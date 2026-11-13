@@ -2,7 +2,7 @@
 syntax on
 
 " Set theme.
-colorscheme habamax
+colorscheme torte
 
 " TAB configuration.
 set tabstop=2
