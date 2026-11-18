@@ -30,6 +30,16 @@
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 (load-theme 'gruber-darker t)
 
+;; Font -- JetBrains Mono (download if missing)
+
+(load (expand-file-name "util/jetbrains-mono.el" user-emacs-directory))
+
+(when (and (display-graphic-p) (not (jetbrains-mono-installed-p)))
+  (jetbrains-mono-install))
+
+(set-face-attribute 'default nil :family "JetBrains Mono" :height 140)
+(set-face-attribute 'fixed-pitch nil :family "JetBrains Mono")
+
 ;; Startup buffer
 
 (setq inhibit-startup-screen t)
