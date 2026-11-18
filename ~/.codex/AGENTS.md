@@ -1,5 +1,11 @@
 # agents.md
 
+## Workflow
+
+### AMF rule
+
+- `AMF` is an abbreviation for "Ask me first". Everytime you find it in a message it literally means the following: "Use your question asking tool to ask me question in order to clarify any doubt or specify anything needed before you start". It can be used at the start of a conversation/task, but not necessarly.
+
 ## Git
 
 ### Commits Text
@@ -13,6 +19,12 @@
 <blank line>
 [optional footer: reference issues, e.g., Resolves #123]
 ```
+
+### PRs
+
+- Never sign PRs with AI authoring footers.
+- The first PRs comment should use a series of simple and clear bullet point list to explain the changes and why they were made.
+- Do not include any `Test` section with checkboxes.
 
 ## Code Style
 

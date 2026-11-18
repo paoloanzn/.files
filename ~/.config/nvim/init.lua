@@ -30,7 +30,7 @@ vim.opt.softtabstop = 2
 vim.opt.expandtab = true
 
 -- Colorscheme
-vim.cmd.colorscheme("habamax")
+vim.cmd.colorscheme("torte")
 
 -- Override comments' color.
 vim.api.nvim_set_hl(0, "Comment", { ctermfg = "green" })
