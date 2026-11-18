@@ -8,14 +8,31 @@
 
 ;; Horizontal scrolling
 
+;; Long lines
 (setq-default truncate-lines t)
-(setq auto-hscroll-mode t)
-(setq hscroll-margin 5)
 
-;; Enable horizontal scrolling with trackpad gestures
-(setq mouse-wheel-tilt-scroll t)
-(pixel-scroll-precision-mode 1)
+;; Horizontal trackpad scrolling
+(setq mouse-wheel-tilt-scroll t
+      mouse-wheel-progressive-speed nil)
+(setq mouse-wheel-flip-direction t)
 
+;; Avoid interfering with horizontal wheel events
+(pixel-scroll-precision-mode -1)
+
+;; Smooth automatic horizontal repositioning
+(setq auto-hscroll-mode t
+      hscroll-margin 2
+      hscroll-step 1)
+
+;; macOS: increase trackpad sensitivity
+(when (boundp 'ns-mwheel-line-height)
+  (setq ns-mwheel-line-height 12))
+
+;; Set TAB width
+
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 2)
+(setq indent-line-function 'insert-tab)
 
 ;; Install macro
 
@@ -165,6 +182,7 @@
 (line-numbers-for-mode go-mode)
 (line-numbers-for-mode typescript-ts-mode)
 (line-numbers-for-mode tide-lang-mode)
+(line-numbers-for-mode svelte-mode)
 
 ;; Packages
 
@@ -418,6 +436,16 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
     (unless (treesit-language-available-p lang)
       (treesit-install-language-grammar lang))))
 
+;; Svelte mode -- Install
+
+(install-pkg 'typescript-mode) ;; This does NOT get used in .ts files.
+(install-pkg 'svelte-mode)
+
+(add-to-list 'auto-mode-alist
+             '("\\.svelte\\'" . svelte-mode))
+
+(setq svelte-basic-offset 2)
+
 ;; Vterm -- Install
 
 (install-pkg 'vterm)
@@ -505,20 +533,29 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 
 (require 'cl-lib)
 (load (expand-file-name "util/eglot-typescript.el" user-emacs-directory))
+(load (expand-file-name "util/eglot-svelte.el" user-emacs-directory))
 
 ;; Define language servers
 (defvar eglot-servers
+  ;; C/C++
   '(((c-mode c++-mode c-ts-mode c++-ts-mode)
      ("clangd"))
 
+    ;; Python
     ((python-mode python-ts-mode)
      ("basedpyright-langserver" "--stdio")
      ("pyright-langserver" "--stdio")
      ("pylsp"))
 
+    ;; Rust
     ((rust-mode rust-ts-mode)
      ("rust-analyzer"))
 
+    ;; Svelte
+    ((svelte-mode)
+     eglot-svelte-command)
+
+    ;; Javascript & Typescript
     ((js-mode js-ts-mode typescript-mode
               typescript-ts-mode tsx-ts-mode)
      eglot-typescript-command)))

@@ -42,7 +42,9 @@
               (error "Install typescript-language-server on %s"
                      (or (file-remote-p default-directory) "this machine")))
             (list server "--stdio"
-                  "--tsserver-path" (file-local-name tsserver))))))))
+                  :initializationOptions
+                  (list :tsserver
+                        (list :path (file-local-name tsserver))))))))))
 
 (provide 'eglot-typescript)
 ;;; eglot-typescript.el ends here

@@ -12,15 +12,16 @@
      default))
  '(package-selected-packages
    '(corfu eat evil gruber-darker-theme magit marginalia markdown-mode
-	   mixed-pitch ob-swift obswift orderless org org-fragtog
-	   org-remoteimg ox-gfm package-name pkg-name poet-theme
-	   rust-mode swift-mode valign vertico vterm))
+           mixed-pitch ob-swift obswift orderless org org-fragtog
+           org-remoteimg ox-gfm package-name pkg-name poet-theme
+           rust-mode svelte-mode swift-mode typescript-mode valign
+           vertico vterm))
  '(safe-local-variable-values
    '((eval progn (org-babel-goto-named-src-block "vm_power_interactive")
-	   (org-babel-execute-src-block))
+           (org-babel-execute-src-block))
      (eval progn
-	   (org-babel-goto-name-src-block "vm_power_interactive")
-	   (org-babel-execute-src-block))
+           (org-babel-goto-name-src-block "vm_power_interactive")
+           (org-babel-execute-src-block))
      (eval setq-local org-confirm-babel-evaluate nil)
      (org-confirm-babel-evaluate lambda (_) nil))))
 (custom-set-faces
