@@ -54,8 +54,22 @@ prettier() {
 # Run a reverse ssh tunnel from within a VM to the host.
 # Use to forward ports from the VM to the host, example: `rssh 5173 npm run dev`.
 rssh() {
-    local port="$1"
-    shift
+    local -a ports=()
+    local -a forwards=()
+
+    # Collect ports
+    while [[ $# -gt 0 && "$1" =~ ^[0-9]+$ ]]; do
+        ports+=("$1")
+        shift
+    done
+
+    # Optional separator
+    [[ "${1:-}" == "--" ]] && shift
+
+    if (( ${#ports[@]} == 0 || $# == 0 )); then
+        echo "Usage: rssh <port> [port...] [--] <command...>" >&2
+        return 1
+    fi
 
     [[ -n "$SSH_CONNECTION" ]] || {
         echo "No SSH connection detected" >&2
@@ -66,18 +80,26 @@ rssh() {
     local host_user="paolo"
     local target="${host_user}@${host_ip}"
 
-    # Automatically trust new host keys and verify authentication
+    # Build reverse forwarding arguments
+    local port
+    for port in "${ports[@]}"; do
+        forwards+=(
+            -R "127.0.0.1:${port}:127.0.0.1:${port}"
+        )
+    done
+
+    # Verify authentication
     ssh -o StrictHostKeyChecking=accept-new \
         -o BatchMode=yes \
         -o ConnectTimeout=5 \
         "$target" true || return 1
 
-    # Start reverse tunnel
+    # Start all tunnels using a single SSH connection
     ssh -NT \
         -o BatchMode=yes \
         -o StrictHostKeyChecking=accept-new \
         -o ExitOnForwardFailure=yes \
-        -R "127.0.0.1:${port}:127.0.0.1:${port}" \
+        "${forwards[@]}" \
         "$target" &
 
     local tunnel_pid=$!
