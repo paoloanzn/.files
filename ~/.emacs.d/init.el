@@ -61,6 +61,24 @@
 
 (setq inhibit-startup-screen t)
 
+(defun welcome--active-vms ()
+  "Return a list of (NAME STATE) for the active VMs reported by vm-power."
+  (when (executable-find "vm-power")
+    (let ((lines (ignore-errors (process-lines "vm-power" "list" "--cached"))))
+      (when (and lines (string-prefix-p "NAME" (car lines)))
+        (let* ((header (car lines))
+               (state-col (string-match "STATE" header))
+               (ip-col (string-match "IP ADDRESS" header)))
+          (delq nil
+                (mapcar
+                 (lambda (line)
+                   (when (> (length line) state-col)
+                     (list (car (split-string line))
+                           (string-trim
+                            (substring line state-col
+                                       (min ip-col (length line)))))))
+                 (cdr lines))))))))
+
 (defun welcome ()
   "Create startup buffer"
   (defmacro add-link-button (text dest type)
@@ -72,35 +90,47 @@
                'follow-link t))
             ((eq actual-type 'external)
              `(progn
-		(setq-local browse-url-browser-function 'browse-url-generic
-                      browse-url-generic-program "chrome")
-		(insert-text-button
-		 ,text
-		 'action ,`(lambda (_) (browse-url-default-browser ,dest))
-		 'follow-link t))))))
+		            (setq-local browse-url-browser-function 'browse-url-generic
+                            browse-url-generic-program "chrome")
+		            (insert-text-button
+		             ,text
+		             'action ,`(lambda (_) (browse-url-default-browser ,dest))
+		             'follow-link t))))))
 
   (let ((buffer (get-buffer-create "*Welcome*")))
     (with-current-buffer buffer
       (let ((inhibit-read-only t))
-	(erase-buffer)
-	;; Title
-	(let ((hour (string-to-number (format-time-string "%H"))))
-	    (let ((msg (cond
-		    ((< hour 12) "Good morning")
-		    ((< hour 17) "Good afternoon")
-		    (t "Good evening"))))
-		(insert (propertize (format "%s, Paolo\n" msg)
-				    'face '(:height 1.3 :weight bold)))))
-	;; Date
-	(insert (format-time-string "%A, %B %d, %Y\n\n"))
-	;; Links
-	(add-link-button "Open configuration" "~/.emacs.d/init.el" 'file)
-	(insert "\n")
-	(add-link-button "Open Org" "~/Org" 'file)
-	(insert "\n")
-	(add-link-button "Email Inbox" "https://mail.google.com/mail/u/1/#inbox" 'external)
+	      (erase-buffer)
+	      ;; Title
+	      (let ((hour (string-to-number (format-time-string "%H"))))
+	        (let ((msg (cond
+		                  ((< hour 12) "Good morning")
+		                  ((< hour 17) "Good afternoon")
+		                  (t "Good evening"))))
+		        (insert (propertize (format "%s, Paolo\n" msg)
+				                        'face '(:height 1.3 :weight bold)))))
+	      ;; Date
+	      (insert (format-time-string "%A, %B %d, %Y\n\n"))
+	      ;; Links
+	      (add-link-button "Open configuration" "~/.emacs.d/init.el" 'file)
+	      (insert "\n")
+	      (add-link-button "Open Org" "~/Org" 'file)
+	      (insert "\n")
+	      (add-link-button "Email Inbox" "https://mail.google.com/mail/u/1/#inbox" 'external)
 
-	(special-mode))
+	      ;; Virtual machines (home folders over TRAMP sshx)
+	      (let ((vms (welcome--active-vms)))
+	        (when vms
+	          (insert "\n\n" (propertize "Virtual machines\n" 'face '(:weight bold)))
+	          (dolist (vm vms)
+	            (insert-text-button
+	             (car vm)
+	             'vm-path (format "/sshx:%s:~/" (car vm))
+	             'action (lambda (button) (find-file (button-get button 'vm-path)))
+	             'follow-link t)
+	            (insert (format "  (%s)\n" (cadr vm))))))
+
+	      (special-mode))
       (goto-char (point-min)))
     buffer))
 
@@ -183,6 +213,7 @@
 (line-numbers-for-mode typescript-ts-mode)
 (line-numbers-for-mode tide-lang-mode)
 (line-numbers-for-mode svelte-mode)
+(line-numbers-for-mode zig-mode)
 
 ;; Packages
 
@@ -345,7 +376,9 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
   (package-install 'evil))
 
 (setq evil-want-C-u-scroll t
-      evil-want-C-i-jump nil)
+      evil-want-C-i-jump nil
+      evil-want-integration t
+      evil-want-keybinding nil)
 
 (require 'evil)
 (evil-mode 1)
@@ -353,6 +386,11 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 (evil-ex-define-cmd "q[uit]" #'kill-current-buffer)
 
 (define-key wdired-mode-map [remap evil-write] #'wdired-finish-edit)
+
+;; Evil collection -- Install
+
+(install-pkg 'evil-collection)
+(evil-collection-init '(magit dired))
 
 ;; Which-key -- Install
 
@@ -390,6 +428,13 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 
 (add-hook 'rust-mode-hook
           (lambda () (setq indent-tabs-mode nil)))
+
+;; Zig-mode -- Install
+
+(install-pkg 'zig-mode)
+
+(add-to-list 'auto-mode-alist '("\\.zig\\'" . zig-mode))
+(add-to-list 'auto-mode-alist '("\\.zon\\'" . zig-mode))
 
 ;; Tide-lang-mode -- Install
 
@@ -593,7 +638,8 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
               eglot-servers))
     (eglot-ensure)))
 
-(add-hook 'prog-mode-hook #'eglot-auto-start)
+;; Temporary disabled.
+;; (add-hook 'prog-mode-hook #'eglot-auto-start)
 
 ;; Eglot -- install
 
@@ -618,5 +664,12 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 (global-corfu-mode 1)
 (corfu-popupinfo-mode 1)
 
+;; Word and file completion without LSP
+
+(install-pkg 'cape)
+(add-hook 'completion-at-point-functions #'cape-dabbrev)
+(add-hook 'completion-at-point-functions #'cape-file)
+
 ;; TAB can indent or trigger completion.
+
 (setq tab-always-indent 'complete)
