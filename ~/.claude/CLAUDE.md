@@ -25,6 +25,7 @@
 - Never sign PRs with this footer: "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
 - The first PRs comment should use a series of simple and clear bullet point list to explain the changes and why they were made.
 - Do not include any `Test` section with checkboxes.
+- The second PR comment should be a merdmaid diagram or a small set of diagrams explaining the code changes in a way that they can be easily understood by the reviewer. Never install tools such as `mermaid-cli`, `playwright` or other chroumium depended tools to verify the diagrams, think twice to ensure they are correct but skip the checks.
 
 ## Code Style
 
