@@ -521,6 +521,23 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
     (when-let ((window (get-buffer-window buffer)))
       (select-window window))))
 
+;; Save buffer contents as a new note
+
+(defun save-buffer-as-note (name)
+  "Save the current buffer's text to a new file in ~/Documents/Notes/ and open it."
+  (interactive "sNote file name: ")
+  (when (string-empty-p (string-trim name))
+    (user-error "File name cannot be empty"))
+  (let* ((dir (expand-file-name "~/Documents/Notes/"))
+         (file (expand-file-name name dir))
+         (text (buffer-substring-no-properties (point-min) (point-max))))
+    (make-directory dir t)
+    (when (and (file-exists-p file)
+               (not (y-or-n-p (format "%s already exists. Overwrite? " file))))
+      (user-error "Cancelled"))
+    (write-region text nil file)
+    (find-file file)))
+
 ;; Files shortcuts
 
 (defun open-init-file()
