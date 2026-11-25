@@ -144,6 +144,12 @@ rssh-authorize() {
     echo "Authorized $vm for rssh"
 }
 
+# Unlock Github's GPG sign key un headless VMs
+unlock-gpg() {
+    export GPG_TTY=$(tty)
+    echo "test" | gpg --clearsign
+}
+
 # TAB complete system init.
 autoload -Uz compinit && compinit -C
 
