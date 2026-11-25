@@ -14,8 +14,8 @@
    '(cape corfu eat evil evil-collection gruber-darker-theme magit
           marginalia markdown-mode mixed-pitch ob-swift obswift
           orderless org org-fragtog org-remoteimg ox-gfm package-name
-          pkg-name poet-theme rust-mode svelte-mode swift-mode
-          typescript-mode valign vertico vterm zig-mode))
+          pkg-name poet-theme rust-mode solarized-theme svelte-mode
+          swift-mode typescript-mode valign vertico vterm zig-mode))
  '(safe-local-variable-values
    '((eval progn (org-babel-goto-named-src-block "vm_power_interactive")
            (org-babel-execute-src-block))

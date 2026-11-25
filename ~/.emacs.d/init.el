@@ -36,15 +36,24 @@
 
 ;; Install macro
 
-(defmacro install-pkg (pkg-name)
+(defmacro install-pkg (pkg-name &optional repo-url)
+  "Install and require PKG-NAME, using REPO-URL when supplied."
   `(progn
      (unless (package-installed-p ,pkg-name)
-       (package-install ,pkg-name))
+       ,(if repo-url
+            `(package-vc-install (list ,pkg-name :url ,repo-url))
+          `(package-install ,pkg-name)))
      (require ,pkg-name)))
 
 ;; Theme
 
+;; Install custom themes from MELPA
+(install-pkg 'solarized-theme)
+
+;; Load custom themes from `~/.emacs.d/themes/`
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
+
+;; Set active theme
 (load-theme 'gruber-darker t)
 
 ;; Font -- JetBrains Mono (download if missing)
@@ -230,6 +239,13 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file 'noerror)
 
+;; Exc -- Install
+
+(install-pkg 'ecss "https://github.com/emacs-taf/ecss.git")
+(install-pkg 'ebox "https://github.com/emacs-taf/ebox.git")
+(install-pkg 'etaf "https://github.com/emacs-taf/etaf.git")
+(install-pkg 'exc "https://github.com/yibie/exc.el.git")
+
 ;; Writable Dired mode -- enable
 
 (require 'wdired)
@@ -391,6 +407,24 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 
 (install-pkg 'evil-collection)
 (evil-collection-init '(magit dired))
+
+;; Exc -- Evil bindings while navigating a grid
+
+(evil-set-initial-state 'exc-etaf-mode 'normal)
+(with-eval-after-load 'exc-etaf
+  ;; Exc's type-to-edit map takes precedence over Evil's normal-state map.
+  ;; Keep its native typing behavior outside normal state.
+  (dolist (entry '(("h" . exc-cell-left) ("j" . exc-next-line)
+                   ("k" . exc-previous-line) ("l" . exc-cell-right)
+                   ("0" . exc-move-beginning-of-line) ("$" . exc-move-end-of-line)
+                   ("i" . exc-edit-cell) ("y" . exc-etaf-copy)
+                   ("p" . exc-etaf-paste) ("u" . exc-etaf-undo)))
+    (define-key exc-etaf-typing-map (kbd (car entry))
+                `(menu-item "" ,(cdr entry) :filter
+                            ,(lambda (command)
+                               (if (and evil-local-mode (evil-normal-state-p))
+                                   command
+                                 #'exc-etaf-self-insert))))))
 
 ;; Which-key -- Install
 
