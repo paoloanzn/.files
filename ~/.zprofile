@@ -7,6 +7,11 @@ if [[ "$OS_TYPE" == "Darwin" ]]; then
   # Init Homebrew environment variables.
   eval "$(/opt/homebrew/bin/brew shellenv)"
 
+  # vcpkg: use the per-user installation and opt out of telemetry.
+  export VCPKG_ROOT="$HOME/.vcpkg"
+  export VCPKG_DISABLE_METRICS=1
+  export PATH="$VCPKG_ROOT:$PATH"
+
   # Map llvm toolchain installed from Homebrew.
   export PATH="$(brew --prefix llvm)/bin:$PATH"
 
