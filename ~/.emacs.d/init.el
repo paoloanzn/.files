@@ -123,8 +123,6 @@
 	      ;; Links
 	      (add-link-button "Open configuration" "~/.emacs.d/init.el" 'file)
 	      (insert "\n")
-	      (add-link-button "Open Org" "~/Org" 'file)
-	      (insert "\n")
 	      (add-link-button "Email Inbox" "https://mail.google.com/mail/u/1/#inbox" 'external)
 
 	      ;; Virtual machines (home folders over TRAMP sshx)
