@@ -6,6 +6,10 @@
 
 - `AMF` is an abbreviation for "Ask me first". Everytime you find it in a message it literally means the following: "Use your question asking tool to ask me question in order to clarify any doubt or specify anything needed before you start". It can be used at the start of a conversation/task, but not necessarly.
 
+### Scratchpad cleanup
+
+- Everytime you find in a message the expression `CLEANJUNK` it means: "Clean up this session's scratchpad from any left-off artifacts that is occuping significant disk space". Before proceeding give a super short breakdown to the user about the session's scratchpad content and use your question asking tool to let the user approve your deletion plan.
+
 ## Git
 
 ### Commits Text
