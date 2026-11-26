@@ -318,8 +318,8 @@
 
 (add-hook 'org-mode-hook #'visual-line-mode)
 (add-hook 'org-mode-hook #'mixed-pitch-mode)
-(add-hook 'markdown-mode-hook #'visual-line-mode)
-(add-hook 'markdown-mode-hook #'mixed-pitch-mode)
+;; (add-hook 'markdown-mode-hook #'visual-line-mode)
+;; (add-hook 'markdown-mode-hook #'mixed-pitch-mode)
 
 ;; Ox-gfm -- Install -- Markdown code blocks rendering
 
