@@ -295,7 +295,33 @@
    (swift . t)
    (R . t)
    (js . t)
-   (C . t)))
+   (C . t)
+   (dot . t)
+   (plantuml . t)
+   (ditaa . t)))
+
+;; Inline diagrams
+
+;; Keep rendered diagrams out of note directories.  A block can still
+;; specify its own :output-dir when its output belongs to a project.
+(dolist (headers '(org-babel-default-header-args:dot
+                   org-babel-default-header-args:plantuml
+                   org-babel-default-header-args:ditaa))
+  (setf (alist-get :output-dir (symbol-value headers))
+        (expand-file-name "~/.local/share/org/diagrams/")))
+
+;; Requires `brew install graphviz plantuml ditaa`
+(setq org-plantuml-exec-mode 'plantuml)
+
+;; Org runs ditaa via its JAR, not the Homebrew launcher.
+(let* ((prefix (or (getenv "HOMEBREW_PREFIX") "/opt/homebrew"))
+       (jar (car (file-expand-wildcards
+                  (expand-file-name "opt/ditaa/libexec/ditaa-*.jar" prefix))))
+       (java (expand-file-name "opt/openjdk/bin/java" prefix)))
+  (when jar (setq org-ditaa-jar-path jar))
+  (when (file-executable-p java) (setq org-babel-ditaa-java-cmd java)))
+
+(add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
 
 ;; Mixed Fonts
 
@@ -348,7 +374,8 @@ git clone https://github.com/gaoDean/org-remoteimg.git \
 (setq org-image-actual-width nil)
 
 ;; Note: `latex` and `dvisvgm` must be installed on the system
-(setq org-preview-latex-default-process 'dvisvgm)
+(setq org-preview-latex-default-process 'dvisvgm
+      org-preview-latex-image-directory (expand-file-name "~/.local/share/org/ltximg/"))
 (setq org-format-latex-options (plist-put org-format-latex-options :scale 2))
 
 ;; Org-fragtog -- Install -- Make Latex preview editable by hovering with cursor
